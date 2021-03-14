@@ -1,32 +1,23 @@
 *Concepts you may want to Google beforehand: hard disk, cylinder, head, sector, 
 carry bit*
 
-**Goal: Let the bootsector load data from disk in order to boot the kernel使bootsector从磁盘中加载数据来引导内核**
+**Goal: 使bootsector从磁盘中加载数据来引导内核**
 
-Our OS won't fit inside the bootsector 512 bytes, so we need to read data from
-a disk in order to run the kernel.
-
-Thankfully, we don't have to deal with turning spinning platters on and off,
-we can just call some BIOS routines, like we did to print characters on the screen.
-To do so, we set `al` to `0x02` (and other registers with the required cylinder, head
-and sector) and raise `int 0x13`
+我们的操作系统无法容纳512字节的引导扇区，因此我们需要从磁盘读取数据才能运行内核。
+值得庆幸的是，我们不必处理打开和关闭旋转的盘片的问题,我们可以像在屏幕上打印字符一样调用一些BIOS routines。
+对此，我们需要将'al'设置为'0x02'**根据下面的指导以及实际代码应该是把ah设为0x02**（以及其他所需带有柱面信息，头部信息，扇面信息的寄存器）并且发出'int 0x13'中断信号
 
 You can access [a detailed int 13h guide here](http://stanislavs.org/helppc/int_13-2.html)
 
-On this lesson we will use for the first time the *carry bit*, which is an extra bit
-present on each register which stores when an operation has overflowed its current
-capacity:
-
+本节课程中我们将第一次使用'carry bit 进位'，该bit是每个寄存器都有的额外bit，用来表示该寄存器存储了超过其容量的信息
 ```nasm
 mov ax, 0xFFFF
 add ax, 1 ; ax = 0x0000 and carry = 1
 ```
 
-The carry isn't accessed directly but used as a control structure by other operators,
-like `jc` (jump if the carry bit is set)
+该进位无法直接访问，但是可以被其他运算符当作控制结构来使用。例如jc（跳转，如果carry bit = 1）
 
-The BIOS also sets `al` to the number of sectors read, so always compare it
-to the expected number.
+BIOS同时会将'al'设置为读取的扇区数，所以始终保持将其与期望的数值进行比对
 
 
 Code
@@ -35,14 +26,11 @@ Code
 Open and examine `boot_sect_disk.asm` for the complete routine that
 reads from disk.
 
-`boot_sect_main.asm` prepares the parameters for disk read and calls `disk_load`.
-Notice how we write some extra data which does not actually belong to the boot
-sector, since it is outside the 512 bits mark.
+`boot_sect_main.asm`为磁盘读取准备了参数，然后调用'disk_load'。注意我们如何写一些实际上不属于引导扇区的额外数据，因为它们在512位标记之外。
 
-The boot sector is actually sector 1 (the first one, sectors start at 1)
-of cylinder 0 of head 0 of hdd 0.
+boot sector实际上在磁盘0 磁头为0 柱面为0 扇面为1（扇面是从1开始的）的位置
 
-Thus, any bytes after byte 512 correspond to sector 2 of cylinder 0 of head 0 of hdd 0
+所以任何在512字节之后的数据都对应磁盘0 磁头0 柱面0 扇区0
 
 The main routine will fill it with sample data and then let the bootsector
 read it.
