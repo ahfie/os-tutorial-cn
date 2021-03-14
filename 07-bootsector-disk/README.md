@@ -32,7 +32,6 @@ boot sector实际上在磁盘0 磁头为0 柱面为0 扇面为1（扇面是从1�
 
 所以任何在512字节之后的数据都对应磁盘0 磁头0 柱面0 扇区0
 
-**下图展示了磁盘结构**
 ![avatar][base64str]
 The main routine will fill it with sample data and then let the bootsector
 read it.
