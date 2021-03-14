@@ -1,7 +1,7 @@
 *Concepts you may want to Google beforehand: hard disk, cylinder, head, sector, 
 carry bit*
 
-**Goal: Let the bootsector load data from disk in order to boot the kernel**
+**Goal: Let the bootsector load data from disk in order to boot the kernel使bootsector从磁盘中加载数据来引导内核**
 
 Our OS won't fit inside the bootsector 512 bytes, so we need to read data from
 a disk in order to run the kernel.
