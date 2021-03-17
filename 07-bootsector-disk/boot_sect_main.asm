@@ -1,4 +1,6 @@
 [org 0x7c00]
+    mov [ BOOT_DRIVE ], dl ; BIOS stores our boot drive in DL , so it ’s
+                           ; best to remember this for later.
     mov bp, 0x8000 ; set the stack safely away from us
     mov sp, bp
 
@@ -6,6 +8,7 @@
     mov dh, 2 ; read 2 sectors
     ; the bios sets 'dl' for our boot disk number
     ; if you have trouble, use the '-fda' flag: 'qemu -fda file.bin'
+    mov dl , [ BOOT_DRIVE ]
     call disk_load
 
     mov dx, [0x9000] ; retrieve the first loaded word, 0xdada
@@ -21,6 +24,10 @@
 %include "../05-bootsector-functions-strings/boot_sect_print.asm"
 %include "../05-bootsector-functions-strings/boot_sect_print_hex.asm"
 %include "boot_sect_disk.asm"
+
+; Global variables
+BOOT_DRIVE : db 0
+
 
 ; Magic number
 times 510 - ($-$$) db 0
